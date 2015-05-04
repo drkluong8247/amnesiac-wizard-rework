@@ -42,6 +42,7 @@ BasicGame.Game = function(game) {
     this.music = null;
     this.burst = null;
     this.shock = null;
+    this.shatter = null;
     
     //controls the player's blank periods
     this.blank = true;
@@ -103,6 +104,8 @@ BasicGame.Game = function(game) {
             var bolt = this.bolts.getFirstExists(false);
             bolt.reset(this.player.x, this.player.y);
             bolt.rotation = this.game.physics.arcade.moveToPointer(bolt, 1000, this.game.input.activePointer, 500);
+            bolt.body.velocity.x = Math.cos(bolt.rotation) * 700;
+            bolt.body.velocity.y = Math.sin(bolt.rotation) * 700;
             bolt.health = 5;
             this.fx.play();
         }
@@ -127,6 +130,10 @@ BasicGame.Game = function(game) {
             {
                 this.skill3();
             }
+            else if(number == 4)
+            {
+                this.skill3();
+            }
             else
             {
                 this.skill0();
@@ -147,66 +154,14 @@ BasicGame.Game = function(game) {
     //skill 1 (fire)
     this.skill1 = function()
     {
-        var fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = 250;
-        fireball.body.velocity.y = 0;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = 160;
-        fireball.body.velocity.y = 90;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = 90;
-        fireball.body.velocity.y = 160;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = 0;
-        fireball.body.velocity.y = 250;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = -90;
-        fireball.body.velocity.y = 160;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = -160;
-        fireball.body.velocity.y = 90;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = -250;
-        fireball.body.velocity.y = 0;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = -160;
-        fireball.body.velocity.y = -90;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = -90;
-        fireball.body.velocity.y = -160;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = 0;
-        fireball.body.velocity.y = -250;
-        fireball.health = 5;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = 90;
-        fireball.body.velocity.y = -160;
-        fireball = this.fireballs.getFirstExists(false);
-        fireball.reset(this.player.x, this.player.y);
-        fireball.body.velocity.x = 160;
-        fireball.body.velocity.y = -90;
-        fireball.health = 5;
-        fireball.health = 5;
+        var i = 0;
+        for(i = 0; i < 24; i++)
+        {
+            var fireball = this.fireballs.getFirstExists(false);
+            fireball.reset(this.player.x, this.player.y);
+            fireball.body.velocity.x = Math.cos(i*15) * 400;
+            fireball.body.velocity.y = Math.sin(i*15) * 400;
+        }
         this.burst.play();
     };
     
@@ -217,32 +172,45 @@ BasicGame.Game = function(game) {
         thunder.reset(this.player.x, this.player.y);
         thunder.health = 10;
         thunder.rotation = this.game.physics.arcade.moveToPointer(thunder, 1000, this.game.input.activePointer, 500);
-        thunder.body.velocity.x *= 3;
-        thunder.body.velocity.y *= 3;
+        thunder.body.velocity.x = Math.cos(thunder.rotation) * 1000;
+        thunder.body.velocity.y = Math.sin(thunder.rotation) * 1000;
+        
         thunder = this.thunders.getFirstExists(false);
-        thunder.reset(this.player.x-10, this.player.y-10);
+        thunder.reset(this.player.x, this.player.y);
         thunder.health = 10;
         thunder.rotation = this.game.physics.arcade.moveToPointer(thunder, 1000, this.game.input.activePointer, 500);
-        thunder.body.velocity.x *= 3;
-        thunder.body.velocity.y *= 3;
+        thunder.body.velocity.x = Math.cos(thunder.rotation) * 1000;
+        thunder.body.velocity.y = Math.sin(thunder.rotation) * 1000;
+        thunder.x -= 10;
+        thunder.y -= 10;
+        
         thunder = this.thunders.getFirstExists(false);
-        thunder.reset(this.player.x-10, this.player.y+10);
+        thunder.reset(this.player.x, this.player.y);
         thunder.health = 10;
         thunder.rotation = this.game.physics.arcade.moveToPointer(thunder, 1000, this.game.input.activePointer, 500);
-        thunder.body.velocity.x *= 3;
-        thunder.body.velocity.y *= 3;
-        vthunder = this.thunders.getFirstExists(false);
-        thunder.reset(this.player.x+10, this.player.y-10);
-        thunder.health = 10;
-        thunder.rotation = this.game.physics.arcade.moveToPointer(thunder, 1000, this.game.input.activePointer, 500);
-        thunder.body.velocity.x *= 3;
-        thunder.body.velocity.y *= 3;
+        thunder.body.velocity.x = Math.cos(thunder.rotation) * 1000;
+        thunder.body.velocity.y = Math.sin(thunder.rotation) * 1000;
+        thunder.x -= 10;
+        thunder.y += 10;
+        
         thunder = this.thunders.getFirstExists(false);
-        thunder.reset(this.player.x+10, this.player.y+10);
+        thunder.reset(this.player.x, this.player.y);
         thunder.health = 10;
         thunder.rotation = this.game.physics.arcade.moveToPointer(thunder, 1000, this.game.input.activePointer, 500);
-        thunder.body.velocity.x *= 3;
-        thunder.body.velocity.y *= 3;
+        thunder.body.velocity.x = Math.cos(thunder.rotation) * 1000;
+        thunder.body.velocity.y = Math.sin(thunder.rotation) * 1000;
+        thunder.x += 10;
+        thunder.y -= 10;
+        
+        thunder = this.thunders.getFirstExists(false);
+        thunder.reset(this.player.x, this.player.y);
+        thunder.health = 10;
+        thunder.rotation = this.game.physics.arcade.moveToPointer(thunder, 1000, this.game.input.activePointer, 500);
+        thunder.body.velocity.x = Math.cos(thunder.rotation) * 1000;
+        thunder.body.velocity.y = Math.sin(thunder.rotation) * 1000;
+        thunder.x += 10;
+        thunder.y += 10;
+        
         this.shock.play();
     };
     
@@ -263,9 +231,10 @@ BasicGame.Game = function(game) {
         icicle.reset(this.player.x, this.player.y);
         icicle.health = 1;
         icicle.rotation = this.game.physics.arcade.moveToPointer(icicle, 1000, this.game.input.activePointer, 500);
-        icicle.body.velocity.x += this.game.rnd.integer() % 70 - 35;
-        icicle.body.velocity.y += this.game.rnd.integer() % 70 - 35;
-        icicle.lifespan = 500;
+        icicle.body.velocity.x = Math.cos(icicle.rotation) * 700 + (this.game.rnd.integer() % 70 - 35);
+        icicle.body.velocity.y = Math.sin(icicle.rotation) * 700 + (this.game.rnd.integer() % 70 - 35);
+        icicle.lifespan = 700;
+        this.shatter.play();
     }
     
     //initializes enemies
@@ -283,8 +252,8 @@ BasicGame.Game = function(game) {
             enemy.health = 10;
         }
         
-        this.enemies.x = 50;
-        this.enemies.y = 50;
+        this.enemies.x = 20;
+        this.enemies.y = 20;
     };
     
     this.blankHandler = function()
@@ -311,8 +280,6 @@ BasicGame.Game = function(game) {
     {
         enemy.kill();
         this.health -= 10;
-        this.playerFlash.reset( player.x, player.y);
-        this.playerFlash.lifespan = 100;
         if(this.health <= 0)
         {
             isAlive = false;
@@ -325,8 +292,6 @@ BasicGame.Game = function(game) {
     this.damageEnemy = function(bolt, enemy)
     {
         enemy.health -= bolt.health;
-        this.enemyFlash.reset(enemy.x, enemy.y);
-        this.enemyFlash.lifespan = 100;
         bolt.kill();
         if(enemy.health <= 0)
         {
@@ -340,7 +305,7 @@ BasicGame.Game = function(game) {
     this.revive = function(enemy)
     {
         this.enemyKilled++;
-        enemy.reset(50, 50);
+        enemy.reset(20, 20);
         enemy.health = 10;
         enemy.body.velocity.x = game.rnd.integer() % 200 + 50;
         enemy.body.velocity.y = game.rnd.integer() % 200 + 50;
@@ -427,6 +392,7 @@ function create() {
     this.fx = this.game.add.audio('castSound');
     this.burst = this.game.add.audio('boomSound');
     this.shock = this.game.add.audio('zapSound');
+    this.shatter = this.game.add.audio('freezeSound');
     this.music = this.game.add.audio('backgroundMusic', 1, true);
     this.music.play('', 0, 1, true);
     
@@ -443,13 +409,6 @@ function create() {
     
     //sets skills
     this.skillSelect = 3;
-    
-    //animating purposes
-    this.playerFlash = this.game.add.sprite( -200, -200, 'wizardflash');
-    this.playerFlash.anchor.setTo(0.5, 0.5);
-    
-    this.enemyFlash = this.game.add.sprite( -200, -200, 'monsterflash');
-    this.enemyFlash.anchor.setTo(0.5, 0.5);
 }
 
 function update(){

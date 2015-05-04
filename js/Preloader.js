@@ -46,6 +46,7 @@ function preload() {
     this.game.load.audio( 'backgroundMusic', 'assets/audio/AnimalCrossing-TownHall.ogg');
     this.game.load.audio( 'ding', 'assets/audio/coincollect.ogg');
     this.game.load.audio( 'zapSound', 'assets/audio/zap.wav');
+    this.game.load.audio( 'freezeSound', 'assets/audio/freeze.wav');
 }
 
 function create() {
