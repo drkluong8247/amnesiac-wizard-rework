@@ -28,6 +28,7 @@ function preload() {
     this.game.load.image( 'world', 'assets/images/ForestBackground.png' );
     this.game.load.image( 'wizard', 'assets/images/Mage.png');
     this.game.load.image( 'monster', 'assets/images/Specter.png');
+    this.game.load.image( 'bossy', 'assets/images/Boss.png');
     this.game.load.image( 'magic', 'assets/images/Boltshot.png');
     this.game.load.image( 'enter', 'assets/images/Button.png');
     this.game.load.image( 'sword', 'assets/images/Sword.png');
@@ -35,6 +36,8 @@ function preload() {
     this.game.load.image( 'fire', 'assets/images/Firebolt.png'); 
     this.game.load.image( 'lightning', 'assets/images/Lightning.png');
     this.game.load.image( 'ice', 'assets/images/Snow.png'); 
+    this.game.load.image( 'tornado', 'assets/images/Wind.png'); 
+    this.game.load.image( 'dark', 'assets/images/Darkshot.png');
     
     //for pseudo-animaton purposes
     this.game.load.image( 'wizardflash', 'assets/images/MageFlash.png');

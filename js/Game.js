@@ -6,6 +6,12 @@ BasicGame.Game = function(game) {
     //background
     this.world = null;
     
+    //timer stuff
+    this.timerStart = 180000;
+    this.timer = null;
+    this.timerText = null;
+    this.timerStyle = {font: "40px Arial", fill: "#000000", align: "left"};
+    
     //player 1 variables
     this.player = null;
     this.keys = null;
@@ -21,21 +27,46 @@ BasicGame.Game = function(game) {
     //this.playerDmg = 5;
     
     //related to player skills (advanced magic)
-    this.skillSelect = 0;
-    this.nextSkill = 0;
     this.skillCoolDown = 10000;
+    this.blank1 = false;
+    this.blank2 = false;
+    this.blank3 = false;
+    this.blank4 = false;
+    this.blank5 = false;
+    
+    //skill1 fire
     this.fireballs = null;
+    this.nextSkill1 = 0;
+    
+    //skill2 thunder
     this.thunders = null;
+    this.nextSkill2 = 0;
+    
+    //skill3 ice
     this.blizzardActive = false;
     this.blizzardCount = 0;
     this.blizzardDuration = 100;
     this.icicles = null;
+    this.nextSkill3 = 0;
+    
+    //skill4 tornado
+    this.whirlwinds = null;
+    this.nextSkill4 = 0;
+    
+    //skill5 heal
+    this.nextSkill5 = 0;
     
     //enemies
     this.enemies = null;
     this.enemyKilled = 0;
-    this.boss = null;
     this.enemyDmg = 10;
+    
+    this.boss = null;
+    this.bossSpawned = false;
+    this.bossDmg = 10;
+    this.darkness = null;
+    this.nextDarkness = 0;
+    this.bossAlive = false;
     
     //sound
     this.fx = null;
@@ -81,7 +112,7 @@ BasicGame.Game = function(game) {
         }
         
         //player skills and shooting
-        if ((this.game.input.activePointer.isDown) && this.isAlive)
+        if((this.game.input.activePointer.isDown) && this.isAlive)
         {
             //now to check if you're suffering from amnesia
             if(!(this.blank))
@@ -89,10 +120,52 @@ BasicGame.Game = function(game) {
                 this.fire();
             }
         }
-        if(this.keys.f.isDown && this.isAlive)
+        
+        if(this.keys.one.isDown && this.isAlive)
         {
-            this.skill(this.skillSelect);
+            if((this.game.time.now > this.nextSkill1) && !(this.blank1))
+            {
+                this.nextSkill1 = this.game.time.now + this.skillCoolDown;
+                this.skill(1);
+            }
         }
+        
+        if(this.keys.two.isDown && this.isAlive)
+        {
+            if((this.game.time.now > this.nextSkill2) && !(this.blank2))
+            {
+                this.nextSkill2 = this.game.time.now + this.skillCoolDown;
+                this.skill(2);
+            }
+        }
+        
+        if(this.keys.three.isDown && this.isAlive)
+        {
+            if((this.game.time.now > this.nextSkill3) && !(this.blank3))
+            {
+                this.nextSkill3 = this.game.time.now + this.skillCoolDown;
+                this.skill(3);
+            }
+        }
+        
+        if(this.keys.four.isDown && this.isAlive)
+        {
+            if((this.game.time.now > this.nextSkill4) && !(this.blank4))
+            {
+                this.nextSkill4 = this.game.time.now + this.skillCoolDown;
+                this.skill(4);
+            }
+        }
+        
+        if(this.keys.five.isDown && this.isAlive)
+        {
+            if((this.game.time.now > this.nextSkill5) && !(this.blank5))
+            {
+                this.nextSkill5 = this.game.time.now + this.skillCoolDown;
+                this.skill(5);
+            }
+        }
+        
     };
     
     //player fires
@@ -114,30 +187,25 @@ BasicGame.Game = function(game) {
     //selects skill
     this.skill = function(number)
     {
-        if(this.game.time.now > this.nextSkill)
+        if(number == 1)
         {
-            this.nextSkill = this.game.time.now + this.skillCoolDown;
-            this.skillSelect = this.game.rnd.integer() % 4;
-            if(number == 1)
-            {
-                this.skill1();
-            }
-            else if(number == 2)
-            {
-                this.skill2();
-            }
-            else if(number == 3)
-            {
-                this.skill3();
-            }
-            else if(number == 4)
-            {
-                this.skill3();
-            }
-            else
-            {
-                this.skill0();
-            }
+            this.skill1();
+        }
+        else if(number == 2)
+        {
+            this.skill2();
+        }
+        else if(number == 3)
+        {
+            this.skill3();
+        }
+        else if(number == 4)
+        {
+            this.skill4();
+        }
+        else
+        {
+            this.skill0();
         }
     };
     
@@ -219,6 +287,21 @@ BasicGame.Game = function(game) {
         this.blizzardActive = true;
     }
     
+    this.skill4 = function()
+    {
+        var i = 0;
+        for(i = 0; i < 18; i++)
+        {
+            var whirlwind = this.whirlwinds.getFirstExists(false);
+            whirlwind.reset(this.game.input.activePointer.x, this.game.input.activePointer.y);
+            whirlwind.body.velocity.x = Math.cos(i*20) * 600;
+            whirlwind.body.velocity.y = Math.sin(i*20) * 600;
+            whirlwind.lifespan = 300;
+            whirlwind.health = 5;
+        }
+        this.burst.play();
+    }
+    
     this.blizzard = function()
     {
         this.blizzardCount++;
@@ -246,8 +329,8 @@ BasicGame.Game = function(game) {
             var enemy = this.enemies.create(0, 0, 'monster');
             enemy.anchor.setTo(0.5, 0.5);
             enemy.body.bounce.set(1);
-            enemy.body.velocity.x = this.game.rnd.integer() % 200 + 50;
-            enemy.body.velocity.y = this.game.rnd.integer() % 200 + 50;
+            enemy.body.velocity.x = this.game.rnd.integer() % 200;
+            enemy.body.velocity.y = this.game.rnd.integer() % 200;
             enemy.body.collideWorldBounds = true;
             enemy.health = 10;
         }
@@ -272,6 +355,36 @@ BasicGame.Game = function(game) {
             this.blankDuration = this.game.rnd.integer() % 200 + 200;
             this.blankCoolDown = this.game.rnd.integer() % 500 + 800;
             this.blankIndicator.reset(775, 575);
+            
+            var temp = this.game.rnd.integer() % 100;
+            if(temp > 70)
+                this.blank1 = true;
+            else
+                this.blank1 = false;
+            
+            temp = this.game.rnd.integer() % 100;
+            if(temp > 70)
+                this.blank2 = true;
+            else
+                this.blank2 = false
+            
+            temp = this.game.rnd.integer() % 100;
+            if(temp > 70)
+                this.blank3 = true;
+            else
+                this.blank3 = false;
+            
+            temp = this.game.rnd.integer() % 100;
+            if(temp > 70)
+                this.blank4 = true;
+            else
+                this.blank4 = false;
+            
+            temp = this.game.rnd.integer() % 100;
+            if(temp > 70)
+                this.blank5 = true;
+            else
+                this.blank5 = false;
         }
     };
     
@@ -282,11 +395,37 @@ BasicGame.Game = function(game) {
         this.health -= 10;
         if(this.health <= 0)
         {
-            isAlive = false;
+            this.isAlive = false;
             player.kill();
             this.gameOver();
         }
         this.revive(enemy);
+    }
+    
+    // handles boss projectile attacks
+    this.shotHandler = function(player, enemy)
+    {
+        enemy.kill();
+        this.health -= 10;
+        if(this.health <= 0)
+        {
+            this.isAlive = false;
+            player.kill();
+            this.gameOver();
+        }
+    }
+    
+    // handles boss attacks
+    this.bossHandler = function(boss, player)
+    {
+        boss.kill();
+        this.health -= 50;
+        if(this.health <= 0)
+        {
+            this.isAlive = false;
+            player.kill();
+            this.gameOver();
+        }
     }
     
     this.damageEnemy = function(bolt, enemy)
@@ -301,15 +440,72 @@ BasicGame.Game = function(game) {
         }
     }
     
+    this.damageBoss = function(boss, bolt)
+    {
+        boss.health -= bolt.health;
+        bolt.kill();
+        if(boss.health <= 0)
+        {
+            boss.kill();
+            this.score += 1000;
+            this.bossAlive = false;
+        }
+    }
+    
+    this.updateBoss = function()
+    {
+        if(this.game.time.now > this.nextDarkness)
+        {
+            this.nextDarkness = this.game.time.now + 3000;
+            var i = 0;
+            for(i = 0; i < 12; i++)
+            {
+                var darkbolt = this.darkness.getFirstExists(false);
+                darkbolt.reset(this.boss.x, this.boss.y);
+                darkbolt.body.velocity.x = Math.cos(i*30) * 300;
+                darkbolt.body.velocity.y = Math.sin(i*30) * 300;
+            }
+        }
+    }
+    
     //revives enemies as needed
     this.revive = function(enemy)
     {
         this.enemyKilled++;
         enemy.reset(20, 20);
         enemy.health = 10;
-        enemy.body.velocity.x = game.rnd.integer() % 200 + 50;
-        enemy.body.velocity.y = game.rnd.integer() % 200 + 50;
+        enemy.body.velocity.x = game.rnd.integer() % 200;
+        enemy.body.velocity.y = game.rnd.integer() % 200;
     };
+    
+    //handles timer
+    this.updateTimer = function()
+    {
+        this.timerText.setText("" + parseInt((this.timer - this.game.time.now) / 1000));
+        
+        if(this.game.time.now > this.timer)
+        {
+            this.timerText.setText("0");
+            this.score += 1000;
+            this.player.kill();
+            this.isAlive = false;
+            this.gameOver();
+        }
+        
+        if(!(this.bossSpawned) && ((this.timer - this.game.time.now) < 180000))
+        {
+            this.bossSpawned = true;
+            this.boss = this.game.add.sprite( 100, 100, 'bossy');
+            this.boss.health = 300;
+            this.game.physics.enable( this.boss, Phaser.Physics.ARCADE );
+            this.boss.body.bounce.set(1);
+            this.boss.body.velocity.x = 50;
+            this.boss.body.velocity.y = 50;
+            this.boss.anchor.setTo( 0.5, 0.5 );
+            this.boss.body.collideWorldBounds = true;
+            this.bossAlive = true;
+        }
+    }
     
     //end game feedback
     this.gameOver = function()
@@ -342,7 +538,11 @@ function create() {
     this.keys.a = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
     this.keys.s = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
     this.keys.d = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-    this.keys.f = this.game.input.keyboard.addKey(Phaser.Keyboard.F);
+    this.keys.one = this.game.input.keyboard.addKey(Phaser.Keyboard.ONE);
+    this.keys.two = this.game.input.keyboard.addKey(Phaser.Keyboard.TWO);
+    this.keys.three = this.game.input.keyboard.addKey(Phaser.Keyboard.THREE);
+    this.keys.four = this.game.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+    this.keys.five = this.game.input.keyboard.addKey(Phaser.Keyboard.FIVE);
     
     //magic bolts for player 1
     this.bolts = this.game.add.group();
@@ -382,6 +582,26 @@ function create() {
     this.icicles.setAll('outOfBoundsKill', true);
     this.icicles.setAll('checkWorldBounds', true);
     
+    this.whirlwinds = this.game.add.group();
+    this.whirlwinds.enableBody = true;
+    this.whirlwinds.physicsBodyType = Phaser.Physics.ARCADE;
+    this.whirlwinds.createMultiple(100, 'tornado', 0, false);
+    this.whirlwinds.setAll('anchor.x', 0.5);
+    this.whirlwinds.setAll('anchor.y', 0.5);
+    this.whirlwinds.setAll('outOfBoundsKill', true);
+    this.whirlwinds.setAll('checkWorldBounds', true);
+    
+    
+    this.darkness = this.game.add.group();
+    this.darkness.enableBody = true;
+    this.darkness.physicsBodyType = Phaser.Physics.ARCADE;
+    this.darkness.createMultiple(30, 'dark', 0, false);
+    this.darkness.setAll('anchor.x', 0.5);
+    this.darkness.setAll('anchor.y', 0.5);
+    this.darkness.setAll('outOfBoundsKill', true);
+    this.darkness.setAll('checkWorldBounds', true);
+    this.nextDarkness = 0;
+    
     //enemies
     this.enemies = this.game.add.group();
     this.enemies.enableBody = true;
@@ -407,8 +627,10 @@ function create() {
     this.blankIndicator = this.game.add.sprite(775, 575, 'not');
     this.blankIndicator.anchor.setTo(0.5, 0.5);
     
-    //sets skills
-    this.skillSelect = 3;
+    //sets timer
+    this.timer = this.game.time.now + this.timerStart;
+    this.timerText = this.game.add.text(400, 50, "180", this.timerStyle);
+    this.timerText.anchor.setTo(0.5, 0.5);
 }
 
 function update(){
@@ -416,14 +638,31 @@ function update(){
     this.blankHandler();
     
     //check player input
-    this.checkKeys();
+    if(this.isAlive)
+    {
+        this.checkKeys();
+        this.updateTimer();
+    }
     
     //check collision
     this.game.physics.arcade.overlap(this.bolts, this.enemies, this.damageEnemy, null, this);
     this.game.physics.arcade.overlap(this.fireballs, this.enemies, this.damageEnemy, null, this);
     this.game.physics.arcade.overlap(this.thunders, this.enemies, this.damageEnemy, null, this);
     this.game.physics.arcade.overlap(this.icicles, this.enemies, this.damageEnemy, null, this);
+    this.game.physics.arcade.overlap(this.whirlwinds, this.enemies, this.damageEnemy, null, this);
     this.game.physics.arcade.overlap(this.enemies, this.player, this.monsterHandler, null, this);
+    
+    this.game.physics.arcade.overlap(this.bolts, this.boss, this.damageBoss, null, this);
+    this.game.physics.arcade.overlap(this.fireballs, this.boss, this.damageBoss, null, this);
+    this.game.physics.arcade.overlap(this.thunders, this.boss, this.damageBoss, null, this);
+    this.game.physics.arcade.overlap(this.icicles, this.boss, this.damageBoss, null, this);
+    this.game.physics.arcade.overlap(this.whirlwinds, this.boss, this.damageBoss, null, this);
+    
+    this.game.physics.arcade.overlap(this.darkness, this.player, this.shotHandler, null, this);
+    this.game.physics.arcade.overlap(this.boss, this.player, this.bossHandler, null, this);
+    
+    if((this.boss != null) && this.bossAlive)
+        this.updateBoss();
     
     //blizzard skill
     if(this.blizzardActive)
@@ -437,24 +676,77 @@ function render()
     this.game.debug.text('Health: ' + this.health + '/' + this.maxHealth, 20, 550);
     this.game.debug.text('Score:' + this.score, 20, 570);
     
-    if(this.game.time.now <= this.nextSkill)
+    
+    this.game.debug.text('Erupting Embers:', 200, 520);
+    if(this.blank1)
     {
-        this.game.debug.text('Skill: NOT READY', 350, 570);
+        this.game.debug.text('??????????', 200, 540);
     }
-    else if(this.skillSelect == 1)
+    else if(this.game.time.now < this.nextSkill1)
     {
-        this.game.debug.text('Skill: Erupting Embers', 350, 570);
-    }
-    else if(this.skillSelect == 2)
-    {
-        this.game.debug.text('Skill: Lightning Lancer', 350, 570);
-    }
-    else if(this.skillSelect == 3)
-    {
-        this.game.debug.text('Skill: Blizzard Breeze', 350, 570);
+        this.game.debug.text('NOT READY', 200, 540);
     }
     else
     {
-        this.game.debug.text('Skill: Heal', 350, 570);
+        this.game.debug.text('READY!!!', 200, 540);
+    }
+    
+    
+    this.game.debug.text('Lightning Lancer:', 200, 570);
+    if(this.blank2)
+    {
+        this.game.debug.text('??????????', 200, 590);
+    }
+    else if(this.game.time.now < this.nextSkill2)
+    {
+        this.game.debug.text('NOT READY', 200, 590);
+    }
+    else
+    {
+        this.game.debug.text('READY!!!', 200, 590);
+    }
+    
+    
+    this.game.debug.text('Blizzard Breeze:', 400, 520);
+    if(this.blank3)
+    {
+        this.game.debug.text('??????????', 400, 540);
+    }
+    else if(this.game.time.now < this.nextSkill3)
+    {
+        this.game.debug.text('NOT READY', 400, 540);
+    }
+    else
+    {
+        this.game.debug.text('READY!!!', 400, 540);
+    }
+    
+    
+    this.game.debug.text('Tornado:', 400, 570);
+    if(this.blank4)
+    {
+        this.game.debug.text('??????????', 400, 590);
+    }
+    else if(this.game.time.now < this.nextSkill4)
+    {
+        this.game.debug.text('NOT READY', 400, 590);
+    }
+    else
+    {
+        this.game.debug.text('READY!!!', 400, 590);
+    }
+    
+    this.game.debug.text('Heal:', 600, 520);
+    if(this.blank5)
+    {
+        this.game.debug.text('??????????', 600, 540);
+    }
+    else if(this.game.time.now < this.nextSkill5)
+    {
+        this.game.debug.text('NOT READY', 600, 540);
+    }
+    else
+    {
+        this.game.debug.text('READY!!!', 600, 540);
     }
 }
