@@ -403,9 +403,9 @@ BasicGame.Game = function(game) {
     }
     
     // handles boss projectile attacks
-    this.shotHandler = function(player, enemy)
+    this.shotHandler = function(player, shot)
     {
-        enemy.kill();
+        shot.kill();
         this.health -= 10;
         if(this.health <= 0)
         {
@@ -419,6 +419,7 @@ BasicGame.Game = function(game) {
     this.bossHandler = function(boss, player)
     {
         boss.kill();
+        this.bossAlive = false;
         this.health -= 50;
         if(this.health <= 0)
         {
@@ -492,11 +493,11 @@ BasicGame.Game = function(game) {
             this.gameOver();
         }
         
-        if(!(this.bossSpawned) && ((this.timer - this.game.time.now) < 180000))
+        if(!(this.bossSpawned) && ((this.timer - this.game.time.now) < 50000))
         {
             this.bossSpawned = true;
             this.boss = this.game.add.sprite( 100, 100, 'bossy');
-            this.boss.health = 300;
+            this.boss.health = 500;
             this.game.physics.enable( this.boss, Phaser.Physics.ARCADE );
             this.boss.body.bounce.set(1);
             this.boss.body.velocity.x = 50;
